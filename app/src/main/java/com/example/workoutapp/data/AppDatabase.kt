@@ -7,7 +7,7 @@ import com.example.workoutapp.data.exercise.ExerciseDao
 
 @Database(
     entities = [Exercise::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

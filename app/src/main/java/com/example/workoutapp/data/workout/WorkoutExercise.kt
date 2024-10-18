@@ -1,9 +1,8 @@
-package com.example.workoutapp.data.workout.exercise
+package com.example.workoutapp.data.workout
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.workoutapp.data.Workout
 
 @Entity(
     tableName = "workout_exercises",

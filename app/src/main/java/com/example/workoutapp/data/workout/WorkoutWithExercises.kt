@@ -1,4 +1,4 @@
-package com.example.workoutapp.data
+package com.example.workoutapp.data.workout
 
 import androidx.room.Embedded
 import androidx.room.Relation

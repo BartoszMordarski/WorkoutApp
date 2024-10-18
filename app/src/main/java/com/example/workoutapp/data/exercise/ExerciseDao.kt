@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +17,12 @@ interface ExerciseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercise(exercise: Exercise)
 
+    @Update
+    suspend fun editExercise(exercise: Exercise)
+
+    @Delete
+    suspend fun deleteExercise(exercise: Exercise)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addExercises(exercises: List<Exercise>)
 
@@ -24,8 +31,5 @@ interface ExerciseDao {
 
     @Query("SELECT * FROM exercises WHERE id = :id")
     fun getExerciseById(id: Long): Flow<Exercise>
-
-    @Delete
-    suspend fun deleteExercise(exercise: Exercise)
 
 }
