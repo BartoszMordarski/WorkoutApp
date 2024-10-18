@@ -1,8 +1,9 @@
-package com.example.workoutapp.data.exercise
+package com.example.workoutapp.data.hiltmodules
 
 import android.app.Application
 import androidx.room.Room
 import com.example.workoutapp.data.AppDatabase
+import com.example.workoutapp.data.exercise.ExerciseDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

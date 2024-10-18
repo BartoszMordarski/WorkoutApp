@@ -5,12 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.workoutapp.navigation.BottomNavigationBar
+import com.example.workoutapp.navigation.Navigation
+import com.example.workoutapp.navigation.shouldShowBottomBar
 import com.example.workoutapp.ui.theme.WorkoutAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 

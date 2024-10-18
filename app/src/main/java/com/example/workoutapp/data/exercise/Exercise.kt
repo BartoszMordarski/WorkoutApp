@@ -10,5 +10,6 @@ data class Exercise(
     val id: Long = 0L,
     val name: String = "",
     val muscleGroup: String = "",
-    val description: String = "",
+    val description: String? = null,
+    val isUserCreated: Boolean = false
 )

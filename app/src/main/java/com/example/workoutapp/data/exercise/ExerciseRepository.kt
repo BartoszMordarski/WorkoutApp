@@ -62,4 +62,16 @@ class ExerciseRepository @Inject constructor (private val exerciseDao: ExerciseD
         return exerciseDao.getExerciseById(id)
     }
 
+    suspend fun insertExercise(exercise: Exercise) {
+        exerciseDao.insertExercise(exercise)
+    }
+
+    suspend fun updateExercise(exercise: Exercise) {
+        exerciseDao.editExercise(exercise)
+    }
+
+    suspend fun deleteExercise(exercise: Exercise) {
+        exerciseDao.deleteExercise(exercise)
+    }
+
 }

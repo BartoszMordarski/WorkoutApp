@@ -1,4 +1,4 @@
-package com.example.workoutapp
+package com.example.workoutapp.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,7 +19,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
@@ -46,18 +48,21 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
     )
 
-    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     NavigationBar {
         items.forEachIndexed { index, item ->
+            val isSelected = currentDestination?.hierarchy?.any { it.route == getRouteForIndex(index) } == true
             NavigationBarItem(
-                selected = selectedItemIndex == index,
+                selected = isSelected,
                 onClick = {
-                    selectedItemIndex = index
-                    when (index) {
-                        0 -> navController.navigate(Screen.Home.route)
-                        2 -> navController.navigate(Screen.AddWorkout.route)
-                        3 -> navController.navigate(Screen.Exercises.route)
+                    navController.navigate(getRouteForIndex(index)) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
                 label = {
@@ -66,7 +71,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 alwaysShowLabel = true,
                 icon = {
                     Icon(
-                        imageVector = if (index == selectedItemIndex) {
+                        imageVector = if (isSelected) {
                             item.selectedIcon
                         } else item.unselectedIcon,
                         contentDescription = item.title
@@ -76,6 +81,17 @@ fun BottomNavigationBar(navController: NavHostController) {
         }
     }
 }
+
+private fun getRouteForIndex(index: Int): String {
+    return when (index) {
+        0 -> Screen.Home.route
+        1 -> Screen.History.route
+        2 -> Screen.AddWorkout.route
+        3 -> Screen.Exercises.route
+        else -> Screen.Home.route
+    }
+}
+
 
 data class BottomNavigationItem(
     val title: String,

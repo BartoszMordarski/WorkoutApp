@@ -1,7 +1,6 @@
-package com.example.workoutapp
+package com.example.workoutapp.presentation.workout
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.workoutapp.Exercise
+import com.example.workoutapp.WorkoutPlan
 
 @Composable
 fun AddWorkoutScreen(navController: NavHostController, modifier: Modifier = Modifier) {

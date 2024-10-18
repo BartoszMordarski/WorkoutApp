@@ -1,8 +1,7 @@
-package com.example.workoutapp.data
+package com.example.workoutapp.data.workout
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.workoutapp.data.workout.exercise.WorkoutExercise
 
 data class ExerciseWithSets(
     @Embedded
