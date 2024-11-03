@@ -1,8 +1,10 @@
 package com.example.workoutapp.data.exercise
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -63,6 +65,11 @@ class ExerciseViewModel @Inject constructor(private val exerciseRepository: Exer
             }
         }
     }
+
+    fun clearSelectedExercise() {
+        _selectedExercise.value = null
+    }
+
 
     fun addExercise(name: String, muscleGroup: String) {
         viewModelScope.launch {

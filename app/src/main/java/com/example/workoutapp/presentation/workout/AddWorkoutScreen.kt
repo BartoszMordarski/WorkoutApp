@@ -2,6 +2,7 @@ package com.example.workoutapp.presentation.workout
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,19 +23,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.workoutapp.Exercise
 import com.example.workoutapp.WorkoutPlan
+import com.example.workoutapp.navigation.ActiveWorkout
 
 @Composable
 fun AddWorkoutScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "New Workout",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp)
+        ) {
+            Text(
+                text = "New Workout",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
 
         Button(
             onClick = {
-                navController.navigate("activeWorkout")
+                navController.navigate(ActiveWorkout(null))
             },
             modifier = Modifier
                 .fillMaxWidth()

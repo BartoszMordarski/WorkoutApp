@@ -8,6 +8,9 @@
       <SelectionState runConfigName="PreviewAddWorkoutScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="ActiveWorkoutScreenPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

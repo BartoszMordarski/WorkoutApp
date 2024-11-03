@@ -7,6 +7,7 @@ sealed class Screen(val route: String): Serializable {
     object AddWorkout : Screen("add_workout")
     object Exercises : Screen("exercises")
     object History : Screen("history")
+    object SelectExercise : Screen("select_exercise")
 
 }
 
@@ -15,3 +16,6 @@ data class ExerciseDetail(val id: Long)
 
 @kotlinx.serialization.Serializable
 data class AddExercise(val id: Long?)
+
+@kotlinx.serialization.Serializable
+data class ActiveWorkout(val id: Long?)

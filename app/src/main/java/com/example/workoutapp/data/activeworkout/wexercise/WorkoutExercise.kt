@@ -1,8 +1,10 @@
-package com.example.workoutapp.data.workout
+package com.example.workoutapp.data.activeworkout.wexercise
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.workoutapp.data.activeworkout.set.SetDetail
+import com.example.workoutapp.data.activeworkout.workout.Workout
 
 @Entity(
     tableName = "workout_exercises",
@@ -20,4 +22,5 @@ data class WorkoutExercise(
     val workoutId: Long,
     val exerciseId: Long,
     val exerciseName: String,
+
 )
