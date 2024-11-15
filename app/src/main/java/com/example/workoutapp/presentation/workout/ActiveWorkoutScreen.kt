@@ -1,11 +1,9 @@
 package com.example.workoutapp.presentation.workout
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -16,20 +14,10 @@ import com.example.workoutapp.data.activeworkout.wexercise.WorkoutExercise
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissValue
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,7 +46,14 @@ fun ActiveWorkoutScreen(
     val workoutName by viewModel.workoutName.collectAsState()
     val exercises by viewModel.exercises.collectAsState()
     val setsInProgress by viewModel.setsInProgress.collectAsState()
+    val dialogState by viewModel.dialogState.collectAsState()
 
+
+    LaunchedEffect(activeWorkout) {
+        if (activeWorkout.id != null) {
+            viewModel.loadTemplateExercises(activeWorkout.id)
+        }
+    }
 
     LaunchedEffect(Unit) {
         val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
@@ -83,6 +78,8 @@ fun ActiveWorkoutScreen(
         }
     }
 
+
+    DialogHandler(viewModel, dialogState, navController)
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -113,7 +110,6 @@ fun ActiveWorkoutScreen(
                 Button(
                     onClick = {
                         viewModel.finishWorkout()
-                        navController.navigateUp()
                     },
                     modifier = Modifier.weight(0.5f)
                 ) {
@@ -185,7 +181,7 @@ fun ExerciseCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-        ){
+        ) {
             Text(
                 text = exercise.exerciseName,
                 style = MaterialTheme.typography.headlineMedium,
@@ -215,11 +211,13 @@ fun ExerciseCard(
         }
 
         sets.forEachIndexed { index, setDetail ->
-            SetDetailRow(
-                setDetail = setDetail,
-                setNumber = index + 1
+            key(setDetail.setUUID) {
+                SetDetailRow(
+                    setDetail = setDetail,
+                    setNumber = index + 1
 
-            )
+                )
+            }
         }
 
         TextButton(
@@ -271,7 +269,6 @@ fun SetDetailRow(
     var offsetX by remember { mutableFloatStateOf(0f) }
     val scope = rememberCoroutineScope()
     val deleteThreshold = -300f
-    var isDeleted by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -286,18 +283,18 @@ fun SetDetailRow(
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragEnd = {
-                            if (offsetX < deleteThreshold && !isDeleted) {
-                                isDeleted = true
+                            if (offsetX < deleteThreshold) {
                                 scope.launch {
-                                    viewModel.removeSetFromWorkoutExercise(setDetail.workoutExerciseId, setDetail)
+                                    viewModel.removeSetFromWorkoutExercise(
+                                        setDetail.workoutExerciseId,
+                                        setDetail
+                                    )
                                 }
                             }
                             offsetX = 0f
                         },
                         onHorizontalDrag = { _, dragAmount ->
-                            if (!isDeleted) {
                                 offsetX += dragAmount
-                            }
                         }
                     )
                 },
@@ -339,7 +336,7 @@ fun SetDetailRow(
 
             IconButton(
                 onClick = {
-                    viewModel.markSetAsCompleted(setDetail.workoutExerciseId, setDetail.setNumber)
+                    viewModel.markSetAsCompleted(setDetail.workoutExerciseId, setDetail.setUUID)
                     isCompleted = !isCompleted
                 }) {
                 Icon(

@@ -10,10 +10,14 @@ import com.example.workoutapp.data.activeworkout.workout.Workout
 import com.example.workoutapp.data.activeworkout.workout.WorkoutDao
 import com.example.workoutapp.data.exercise.Exercise
 import com.example.workoutapp.data.exercise.ExerciseDao
+import com.example.workoutapp.data.template.texercise.TemplateExercise
+import com.example.workoutapp.data.template.texercise.TemplateExerciseDao
+import com.example.workoutapp.data.template.wtemplate.WorkoutTemplate
+import com.example.workoutapp.data.template.wtemplate.WorkoutTemplateDao
 
 @Database(
-    entities = [Exercise::class, Workout::class, WorkoutExercise::class, SetDetail::class],
-    version = 3,
+    entities = [Exercise::class, Workout::class, WorkoutExercise::class, SetDetail::class, WorkoutTemplate::class, TemplateExercise::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -22,5 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
     abstract fun workoutExerciseDao(): WorkoutExerciseDao
     abstract fun setDetailDao(): SetDetailDao
+    abstract fun workoutTemplateDao(): WorkoutTemplateDao
+    abstract fun templateExerciseDao(): TemplateExerciseDao
 
 }

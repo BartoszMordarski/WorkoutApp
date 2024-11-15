@@ -1,6 +1,8 @@
 package com.example.workoutapp.presentation.workout
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,18 +17,28 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.workoutapp.Exercise
-import com.example.workoutapp.WorkoutPlan
+import com.example.workoutapp.data.exercise.ExerciseViewModel
+import com.example.workoutapp.data.template.TemplateViewModel
+import com.example.workoutapp.data.template.TemplateWithExercises
 import com.example.workoutapp.navigation.ActiveWorkout
 
 @Composable
-fun AddWorkoutScreen(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AddWorkoutScreen(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    viewModel: TemplateViewModel = hiltViewModel(),
+    exerciseViewModel: ExerciseViewModel = hiltViewModel()
+) {
+    val workoutTemplates by viewModel.workoutTemplates.collectAsState()
+    Log.d("AddWorkoutScreen", "Templates: $workoutTemplates")
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -59,62 +71,46 @@ fun AddWorkoutScreen(navController: NavHostController, modifier: Modifier = Modi
             modifier = Modifier.padding(16.dp)
         )
 
-        val sampleWorkoutPlans = listOf(
-            WorkoutPlan(
-                name = "Full Body Workout",
-                exercises = listOf(
-                    Exercise(name = "Squat", muscleGroup = "Legs", sets = 3),
-                    Exercise(name = "Bench Press", muscleGroup = "Chest", sets = 4),
-                    Exercise(name = "Deadlift", muscleGroup = "Back", sets = 3),
-                    Exercise(name = "Shoulder Press", muscleGroup = "Shoulders", sets = 3)
-                )
-            ),
-            WorkoutPlan(
-                name = "Upper Body Strength",
-                exercises = listOf(
-                    Exercise(name = "Pull Ups", muscleGroup = "Back", sets = 4),
-                    Exercise(name = "Overhead Press", muscleGroup = "Shoulders", sets = 3),
-                    Exercise(name = "Dumbbell Curls", muscleGroup = "Arms", sets = 3),
-                    Exercise(name = "Tricep Dips", muscleGroup = "Arms", sets = 3)
-                )
-            ),
-            WorkoutPlan(
-                name = "Leg Day",
-                exercises = listOf(
-                    Exercise(name = "Leg Press", muscleGroup = "Legs", sets = 4),
-                    Exercise(name = "Lunges", muscleGroup = "Legs", sets = 3),
-                    Exercise(name = "Leg Curls", muscleGroup = "Legs", sets = 4),
-                    Exercise(name = "Calf Raises", muscleGroup = "Legs", sets = 3)
-                )
-            )
-        )
+        Log.d("WorkoutTemplates", "Templates: $workoutTemplates")
 
         LazyColumn {
-            items(sampleWorkoutPlans) { plan ->
-                WorkoutPlanItem(plan)
+            items(workoutTemplates) { template ->
+                Log.d("LazyColumn", "Rendering template: ${template.template.templateName}")
+                WorkoutTemplateCard(
+                    template,
+                    exerciseViewModel,
+                    onClick = {
+                        navController.navigate(ActiveWorkout(template.template.templateId))
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun WorkoutPlanItem(workoutPlan: WorkoutPlan) {
+fun WorkoutTemplateCard(
+    template: TemplateWithExercises,
+    viewModel: ExerciseViewModel,
+    onClick: () -> Unit
+    ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = workoutPlan.name,
+                text = template.template.templateName,
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
-            workoutPlan.exercises.forEach { exercise ->
+            template.exercises.forEach { exercise ->
                 Text(
-                    text = "${exercise.sets} x ${exercise.name}",
+                    text = "${exercise.numberOfSets} x ${viewModel.getExerciseNameById(exercise.exerciseId)}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -122,10 +118,4 @@ fun WorkoutPlanItem(workoutPlan: WorkoutPlan) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAddWorkoutScreen() {
-    AddWorkoutScreen(navController = rememberNavController())
-}
 

@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -83,6 +84,7 @@ class ExerciseViewModel @Inject constructor(private val exerciseRepository: Exer
         }
     }
 
+
     fun updateExercise(id: Long, name: String, muscleGroup: String) {
         viewModelScope.launch {
             exerciseRepository.getExerciseById(id).firstOrNull()?.let { exercise ->
@@ -97,6 +99,10 @@ class ExerciseViewModel @Inject constructor(private val exerciseRepository: Exer
         viewModelScope.launch {
             exerciseRepository.deleteExercise(exercise)
         }
+    }
+
+    fun getExerciseNameById(id: Long): String? {
+        return _exercises.value.find { it.id == id }?.name
     }
 
 }
