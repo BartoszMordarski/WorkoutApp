@@ -14,6 +14,8 @@ import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen
 import com.example.workoutapp.presentation.workout.AddWorkoutScreen
 import com.example.workoutapp.presentation.exercise.AddEditExerciseScreen
+import com.example.workoutapp.presentation.workout.ActiveWorkoutScreen
+import com.example.workoutapp.presentation.workout.SelectExerciseScreen
 
 
 @Composable
@@ -35,17 +37,26 @@ fun Navigation(
         }
 
         composable(Screen.History.route) {
-            HistoryScreen(modifier = Modifier.padding(innerPadding))
+            HistoryScreen(navController, innerPadding)
         }
 
         composable<ExerciseDetail> { backStackEntry ->
-            val exerciseDetail : ExerciseDetail = backStackEntry.toRoute()
+            val exerciseDetail: ExerciseDetail = backStackEntry.toRoute()
             ExerciseDetailsScreen(exerciseDetail, navController)
         }
 
         composable<AddExercise> { backStackEntry ->
-            val addExercise : AddExercise = backStackEntry.toRoute()
+            val addExercise: AddExercise = backStackEntry.toRoute()
             AddEditExerciseScreen(navController, addExercise)
         }
+
+        composable<ActiveWorkout> { backStackEntry ->
+            val activeWorkout: ActiveWorkout = backStackEntry.toRoute()
+            ActiveWorkoutScreen(navController, activeWorkout)
+        }
+
+        composable(Screen.SelectExercise.route) {
+            SelectExerciseScreen(navController)
+        }
     }
-}
+    }
