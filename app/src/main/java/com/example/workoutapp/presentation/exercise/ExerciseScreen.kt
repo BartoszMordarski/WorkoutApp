@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -50,13 +51,18 @@ import com.example.workoutapp.navigation.ExerciseDetail
 @Composable
 fun ExerciseScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
     viewModel: ExerciseViewModel = hiltViewModel()
 ) {
     val muscleGroup by viewModel.muscleGroup.collectAsState()
     val exercises by viewModel.exercises.collectAsState()
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 16.dp)
+        .padding(bottom = paddingValues.calculateBottomPadding())
+        .padding(horizontal = 16.dp)
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
