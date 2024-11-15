@@ -25,15 +25,15 @@ fun Navigation(
 ) {
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
-            HomeView(modifier = Modifier.padding(innerPadding))
+            HomeView(innerPadding)
         }
 
         composable(Screen.AddWorkout.route) {
-            AddWorkoutScreen(navController, Modifier.padding(innerPadding))
+            AddWorkoutScreen(navController, innerPadding)
         }
 
         composable(Screen.Exercises.route) {
-            ExerciseScreen(navController, Modifier.padding(innerPadding))
+            ExerciseScreen(navController, innerPadding)
         }
 
         composable(Screen.History.route) {
