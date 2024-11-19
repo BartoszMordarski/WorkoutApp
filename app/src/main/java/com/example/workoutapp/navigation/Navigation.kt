@@ -1,14 +1,12 @@
 package com.example.workoutapp.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.workoutapp.HistoryScreen
+import com.example.workoutapp.presentation.history.HistoryScreen
 import com.example.workoutapp.HomeView
 import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen

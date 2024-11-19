@@ -3,6 +3,7 @@ package com.example.workoutapp.data.template
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.workoutapp.data.template.wtemplate.WorkoutTemplate
 import com.example.workoutapp.data.template.wtemplate.WorkoutTemplateRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,12 @@ class TemplateViewModel @Inject constructor(
             templateRepository.getAllTemplates().collect { templates ->
                 _workoutTemplates.value = templates
             }
+        }
+    }
+
+    fun deleteTemplate(template: WorkoutTemplate) {
+        viewModelScope.launch {
+            templateRepository.deleteTemplate(template)
         }
     }
 }
