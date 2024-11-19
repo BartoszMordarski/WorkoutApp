@@ -1,4 +1,4 @@
-package com.example.workoutapp
+package com.example.workoutapp.presentation.history
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +34,7 @@ import com.example.workoutapp.data.history.HistoryViewModel
 @Composable
 fun HistoryScreen(
     navController: NavController,
-    paddingValues: PaddingValues, //TODO wszedzie pozmieniac modifier na paddingvalues zeby wygladalo elegancko
+    paddingValues: PaddingValues,
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
 

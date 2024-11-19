@@ -1,6 +1,7 @@
 package com.example.workoutapp.presentation.workout
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -47,6 +48,49 @@ fun ActiveWorkoutScreen(
     val exercises by viewModel.exercises.collectAsState()
     val setsInProgress by viewModel.setsInProgress.collectAsState()
     val dialogState by viewModel.dialogState.collectAsState()
+    var cancelDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        cancelDialog = true
+    }
+    if (cancelDialog) {
+        AlertDialog(
+            onDismissRequest = { cancelDialog = false },
+            title = { Text("Cancel workout") },
+            text = { Text("Are you sure you want to cancel this workout?") },
+            confirmButton = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = {
+                            cancelDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Text("Keep working out")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            viewModel.cancelWorkout()
+                            cancelDialog = false
+                            navController.navigateUp()
+                        },
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
+    }
 
 
     LaunchedEffect(activeWorkout) {
@@ -77,7 +121,6 @@ fun ActiveWorkoutScreen(
             }
         }
     }
-
 
     DialogHandler(viewModel, dialogState, navController)
 
@@ -141,11 +184,11 @@ fun ActiveWorkoutScreen(
                     Text("Add Exercise")
                 }
             }
+
             item {
                 Button(
                     onClick = {
-                        viewModel.cancelWorkout()
-                        navController.navigateUp()
+                        cancelDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -195,7 +238,6 @@ fun ExerciseCard(
                 )
             }
         }
-
 
 
         Row(
@@ -365,8 +407,3 @@ fun WorkoutTimer(
 
     Text(text = String.format("%02d:%02d:%02d", hours, minutes, seconds))
 }
-
-
-
-
-
