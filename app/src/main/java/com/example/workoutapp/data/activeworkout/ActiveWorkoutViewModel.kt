@@ -235,22 +235,29 @@ class ActiveWorkoutViewModel @Inject constructor(
 
     fun updateExistingTemplate(templateId: Long) {
         viewModelScope.launch {
-            val updatedTemplate = WorkoutTemplate(
-                templateId = templateId,
-                templateName = _workoutName.value,
-                isDefault = false
-            )
-            templateRepository.updateTemplate(updatedTemplate)
 
-            templateRepository.deleteTemplateExercisesByTemplateId(templateId)
+            val existingTemplate = templateRepository.getTemplateById(templateId).first()
 
-            _exercises.value.forEach { exercise ->
-                val templateExercise = TemplateExercise(
+            if (existingTemplate.isDefault) {
+                saveAsNewTemplate()
+            } else {
+                val updatedTemplate = WorkoutTemplate(
                     templateId = templateId,
-                    exerciseId = exercise.exerciseId,
-                    numberOfSets = _setsInProgress.value[exercise.workoutExerciseId]?.size ?: 0
+                    templateName = _workoutName.value,
+                    isDefault = false
                 )
-                templateRepository.insertTemplateExercise(templateExercise)
+                templateRepository.updateTemplate(updatedTemplate)
+
+                templateRepository.deleteTemplateExercisesByTemplateId(templateId)
+
+                _exercises.value.forEach { exercise ->
+                    val templateExercise = TemplateExercise(
+                        templateId = templateId,
+                        exerciseId = exercise.exerciseId,
+                        numberOfSets = _setsInProgress.value[exercise.workoutExerciseId]?.size ?: 0
+                    )
+                    templateRepository.insertTemplateExercise(templateExercise)
+                }
             }
         }
     }

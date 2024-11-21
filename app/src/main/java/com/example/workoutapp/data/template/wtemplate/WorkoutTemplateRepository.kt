@@ -80,8 +80,12 @@ class WorkoutTemplateRepository @Inject constructor(
         return workoutTemplateDao.getAllTemplates()
     }
 
-    fun getTemplateWithExercisesById(templateId: Long): Flow<TemplateWithExercises> {
+    fun getTemplateById(templateId: Long): Flow<WorkoutTemplate> {
         return workoutTemplateDao.getTemplateById(templateId)
+    }
+
+    fun getTemplateWithExercisesById(templateId: Long): Flow<TemplateWithExercises> {
+        return workoutTemplateDao.getTemplateWithExercisesById(templateId)
     }
 
     suspend fun deleteTemplate(template: WorkoutTemplate) {

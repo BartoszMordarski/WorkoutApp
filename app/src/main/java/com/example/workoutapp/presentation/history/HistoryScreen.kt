@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.data.activeworkout.WorkoutWithExercises
 import com.example.workoutapp.data.history.HistoryViewModel
+import com.example.workoutapp.navigation.HistoryDetail
 
 
 @Composable
@@ -63,7 +64,13 @@ fun HistoryScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(workoutHistory) { workout ->
-                WorkoutCard(workout, viewModel)
+                WorkoutCard(
+                    workout,
+                    viewModel,
+                    onClick = {
+                        navController.navigate(HistoryDetail(workout.workout.workoutId))
+                    }
+                )
             }
         }
     }
@@ -73,14 +80,16 @@ fun HistoryScreen(
 @Composable
 fun WorkoutCard(
     workoutWithExercises: WorkoutWithExercises,
-    viewModel: HistoryViewModel
+    viewModel: HistoryViewModel,
+    onClick: () -> Unit
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
