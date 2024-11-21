@@ -12,6 +12,7 @@ import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen
 import com.example.workoutapp.presentation.workout.AddWorkoutScreen
 import com.example.workoutapp.presentation.exercise.AddEditExerciseScreen
+import com.example.workoutapp.presentation.history.HistoryDetailsScreen
 import com.example.workoutapp.presentation.workout.ActiveWorkoutScreen
 import com.example.workoutapp.presentation.workout.SelectExerciseScreen
 
@@ -36,6 +37,11 @@ fun Navigation(
 
         composable(Screen.History.route) {
             HistoryScreen(navController, innerPadding)
+        }
+
+        composable<HistoryDetail> { backStackEntry ->
+            val historyDetail: HistoryDetail = backStackEntry.toRoute()
+            HistoryDetailsScreen(historyDetail, navController)
         }
 
         composable<ExerciseDetail> { backStackEntry ->

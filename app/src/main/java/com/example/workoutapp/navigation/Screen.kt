@@ -19,3 +19,6 @@ data class AddExercise(val id: Long?)
 
 @kotlinx.serialization.Serializable
 data class ActiveWorkout(val id: Long?)
+
+@kotlinx.serialization.Serializable
+data class HistoryDetail(val id: Long)

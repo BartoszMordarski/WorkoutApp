@@ -17,7 +17,10 @@ interface WorkoutTemplateDao {
     fun getAllTemplates(): Flow<List<TemplateWithExercises>>
 
     @Query("SELECT * FROM workout_templates WHERE templateId = :templateId")
-    fun getTemplateById(templateId: Long): Flow<TemplateWithExercises>
+    fun getTemplateWithExercisesById(templateId: Long): Flow<TemplateWithExercises>
+
+    @Query("SELECT * FROM workout_templates WHERE templateId = :templateId")
+    fun getTemplateById(templateId: Long): Flow<WorkoutTemplate>
 
     @Delete
     suspend fun deleteTemplate(template: WorkoutTemplate)

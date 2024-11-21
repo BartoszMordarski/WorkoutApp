@@ -85,15 +85,16 @@ fun AddWorkoutScreen(
         )
 
         LazyColumn {
-            if (defaultTemplates.isNotEmpty()) {
+
+            if (userTemplates.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Default Templates",
+                        text = "User's Templates",
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-                items(defaultTemplates) { template ->
+                items(userTemplates) { template ->
                     WorkoutTemplateCard(
                         template,
                         viewModel,
@@ -105,15 +106,15 @@ fun AddWorkoutScreen(
                 }
             }
 
-            if (userTemplates.isNotEmpty()) {
+            if (defaultTemplates.isNotEmpty()) {
                 item {
                     Text(
-                        text = "User's Templates",
-                        style = MaterialTheme.typography.titleSmall,
+                        text = "Default Templates",
+                        style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-                items(userTemplates) { template ->
+                items(defaultTemplates) { template ->
                     WorkoutTemplateCard(
                         template,
                         viewModel,

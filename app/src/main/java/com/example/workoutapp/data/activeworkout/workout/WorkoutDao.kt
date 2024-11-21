@@ -19,6 +19,10 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts WHERE workoutId = :workoutId")
     fun getWorkoutById(workoutId: Long): Flow<Workout?>
 
+    @Transaction
+    @Query("SELECT * FROM workouts WHERE workoutId = :workoutId")
+    fun getWorkoutWithExercises(workoutId: Long): Flow<WorkoutWithExercises>
+
     @Delete
     suspend fun deleteWorkout(workout: Workout)
 
