@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import com.example.workoutapp.data.activeworkout.wexercise.WorkoutExercise
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -22,9 +24,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,6 +55,8 @@ fun ActiveWorkoutScreen(
     val dialogState by viewModel.dialogState.collectAsState()
     var cancelDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+
 
     BackHandler {
         cancelDialog = true
@@ -129,8 +136,13 @@ fun ActiveWorkoutScreen(
 
     DialogHandler(viewModel, dialogState, navController)
 
-
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { focusManager.clearFocus() }
+            )
+        }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -144,9 +156,11 @@ fun ActiveWorkoutScreen(
                 TextField(
                     value = workoutName,
                     onValueChange = { newName -> viewModel.updateWorkoutName(newName) },
-                    label = { Text("Workout Name") },
+                    placeholder = { Text("Workout Name") },
                     singleLine = true,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -230,7 +244,7 @@ fun ExerciseCard(
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outline,
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.large
             )
     ) {
         Row(
@@ -254,14 +268,15 @@ fun ExerciseCard(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Set", modifier = Modifier.weight(1f))
-            Text(text = "Previous", modifier = Modifier.weight(1f))
-            Text(text = "Kg", modifier = Modifier.weight(1f))
-            Text(text = "Reps", modifier = Modifier.weight(1f))
+            Text(text = "Set", modifier = Modifier.weight(0.5f), textAlign = TextAlign.Center)
+            Text(text = "Previous", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            Text(text = "Kg", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            Text(text = "Reps", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            Spacer(modifier = Modifier.weight(0.5f))
         }
 
         sets.forEachIndexed { index, setDetail ->
@@ -332,7 +347,6 @@ fun SetDetailRow(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
                 .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
@@ -352,17 +366,22 @@ fun SetDetailRow(
                         }
                     )
                 },
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Text(text = setNumber.toString(), modifier = Modifier.weight(1f))
+            Text(
+                text = setNumber.toString(),
+                modifier = Modifier.weight(0.5f),
+                textAlign = TextAlign.Center
+            )
             Text(
                 text = if (setDetail.previousWeight != null && setDetail.previousReps != null) {
-                    "${setDetail.previousWeight}kg x ${setDetail.previousReps}"
+                    "${setDetail.previousWeight.toInt()}kg x ${setDetail.previousReps}"
                 } else {
                     "-"
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f), textAlign = TextAlign.Center
             )
 
             var weight by remember { mutableStateOf(setDetail.weight.toString()) }
@@ -374,7 +393,8 @@ fun SetDetailRow(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 label = null,
                 placeholder = { Text("kg") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
@@ -389,7 +409,8 @@ fun SetDetailRow(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 label = null,
                 placeholder = { Text("reps") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
@@ -399,7 +420,9 @@ fun SetDetailRow(
                 onClick = {
                     viewModel.markSetAsCompleted(setDetail.workoutExerciseId, setDetail.setUUID)
                     isCompleted = !isCompleted
-                }) {
+                },
+                modifier = Modifier.weight(0.5f)
+            ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Confirm Set",
