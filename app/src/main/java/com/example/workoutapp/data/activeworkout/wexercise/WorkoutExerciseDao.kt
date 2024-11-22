@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.workoutapp.data.activeworkout.ExerciseWithSets
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -21,4 +22,7 @@ interface WorkoutExerciseDao {
 
     @Query("SELECT * FROM workout_exercises WHERE workoutId = :workoutId")
     fun getExercisesForWorkout(workoutId: Long): Flow<List<WorkoutExercise>>
+
+    @Query("SELECT * FROM workout_exercises WHERE exerciseId = :exerciseId ORDER BY workoutId DESC LIMIT 1")
+    fun getLastWorkoutExerciseWithSets(exerciseId: Long): Flow<ExerciseWithSets?>
 }

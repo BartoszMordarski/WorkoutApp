@@ -23,6 +23,8 @@ data class SetDetail(
     var setNumber: Int,
     var weight: Float,
     var reps: Int,
+    val previousWeight: Float? = null,
+    val previousReps: Int? = null,
     var isCompleted: Boolean = false,
     @Ignore val setUUID: String = UUID.randomUUID().toString()
 
@@ -33,6 +35,8 @@ data class SetDetail(
         setNumber: Int,
         weight: Float,
         reps: Int,
+        previousWeight: Float?,
+        previousReps: Int?,
         isCompleted: Boolean
-    ) : this(setId, workoutExerciseId, setNumber, weight, reps, isCompleted, UUID.randomUUID().toString())
+    ) : this(setId, workoutExerciseId, setNumber, weight, reps, previousWeight, previousReps, isCompleted, UUID.randomUUID().toString())
 }
