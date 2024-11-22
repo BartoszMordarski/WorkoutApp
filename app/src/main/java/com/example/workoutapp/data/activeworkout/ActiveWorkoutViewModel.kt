@@ -70,37 +70,36 @@ class ActiveWorkoutViewModel @Inject constructor(
     private var _areTemplateExercisesLoaded = MutableStateFlow(false)
 
     fun loadTemplateExercises(templateId: Long) {
-        if(!_areTemplateExercisesLoaded.value){
+        if (!_areTemplateExercisesLoaded.value) {
             _areTemplateExercisesLoaded.value = true
             viewModelScope.launch {
 
                 _isTemplateWorkout.value = true
                 _originalTemplateId.value = templateId
 
-                templateRepository.getTemplateWithExercisesById(templateId).collect { templateWithExercises ->
-                    updateWorkoutName(templateWithExercises.template.templateName)
+                templateRepository.getTemplateWithExercisesById(templateId)
+                    .collect { templateWithExercises ->
+                        updateWorkoutName(templateWithExercises.template.templateName)
 
-                    for (templateExercise in templateWithExercises.exercises) {
-                        val newWorkoutExercise = WorkoutExercise(
-                            workoutExerciseId = _exercises.value.size.toLong() + 1,
-                            workoutId = 0L,
-                            exerciseId = templateExercise.exerciseId,
-                            exerciseName = exerciseRepository.getExerciseById(templateExercise.exerciseId).first().name
-                        )
+                        for (templateExercise in templateWithExercises.exercises) {
+                            val newWorkoutExercise = WorkoutExercise(
+                                workoutExerciseId = _exercises.value.size.toLong() + 1,
+                                workoutId = 0L,
+                                exerciseId = templateExercise.exerciseId,
+                                exerciseName = exerciseRepository.getExerciseById(templateExercise.exerciseId)
+                                    .first().name
+                            )
 
-                        addExercise(newWorkoutExercise)
+                            addExercise(newWorkoutExercise)
 
-                        repeat(templateExercise.numberOfSets) {
-                            addSetToWorkoutExercise(newWorkoutExercise.workoutExerciseId)
+                            repeat(templateExercise.numberOfSets) {
+                                addSetToWorkoutExercise(newWorkoutExercise.workoutExerciseId, newWorkoutExercise.exerciseId)
+                            }
                         }
                     }
-                }
             }
         }
     }
-
-
-
 
 
     fun updateWorkoutName(newName: String) {
@@ -118,7 +117,6 @@ class ActiveWorkoutViewModel @Inject constructor(
     }
 
 
-
     fun addExercise(exercise: WorkoutExercise) {
         if (_exercises.value.none { it.exerciseId == exercise.exerciseId }) {
             _exercises.value += exercise
@@ -134,31 +132,99 @@ class ActiveWorkoutViewModel @Inject constructor(
 
     fun deleteExerciseFromWorkout(workoutExerciseId: Long) {
         viewModelScope.launch {
-            setDetailRepository.deleteSetsByWorkoutExerciseId(workoutExerciseId)
-            workoutExerciseRepository.deleteExercise(workoutExerciseId)
-
             _exercises.value = _exercises.value.filterNot { it.workoutExerciseId == workoutExerciseId }
             _setsInProgress.value = _setsInProgress.value.filterKeys { it != workoutExerciseId }
         }
     }
 
-    fun addSetToWorkoutExercise(workoutExerciseId: Long) {
-            val currentSets = _setsInProgress.value.toMutableMap()
 
-            val existingSets = currentSets[workoutExerciseId]?.toMutableList() ?: mutableListOf()
-            val setNumber = existingSets.size + 1
-
-            val newSet = SetDetail(
-                workoutExerciseId = workoutExerciseId,
-                setNumber = setNumber,
-                weight = 0f,
-                reps = 0
-            )
-
-            existingSets.add(newSet)
-            currentSets[workoutExerciseId] = existingSets
-            _setsInProgress.value = currentSets
+    private suspend fun getPreviousSetDetails(exerciseId: Long): List<SetDetail> {
+        return workoutExerciseRepository.getLastWorkoutExerciseWithSets(exerciseId)
+            .firstOrNull()?.sets ?: emptyList()
     }
+
+
+//    suspend fun addSetToWorkoutExercise(workoutExerciseId: Long, exerciseId: Long) {
+//
+//            val currentSets = _setsInProgress.value.toMutableMap()
+//            val existingSets = currentSets[workoutExerciseId]?.toMutableList() ?: mutableListOf()
+//            val setNumber = existingSets.size + 1
+//
+//            val previousSets = getPreviousSetDetails(exerciseId)
+//
+//            val (previousWeight, previousReps) = if (setNumber <= previousSets.size) {
+//                val prevSet = previousSets[setNumber - 1]
+//                prevSet.weight to prevSet.reps
+//            } else {
+//                null to null
+//            }
+//
+//            val newSet = SetDetail(
+//                workoutExerciseId = workoutExerciseId,
+//                setNumber = setNumber,
+//                weight = 0f,
+//                reps = 0,
+//                previousWeight = previousWeight,
+//                previousReps = previousReps
+//            )
+//
+//            existingSets.add(newSet)
+//            currentSets[workoutExerciseId] = existingSets
+//            _setsInProgress.value = currentSets
+//
+//    }
+
+    suspend fun addSetToWorkoutExercise(workoutExerciseId: Long, exerciseId: Long) {
+        val currentSets = _setsInProgress.value.toMutableMap()
+        val existingSets = currentSets[workoutExerciseId]?.toMutableList() ?: mutableListOf()
+        val setNumber = existingSets.size + 1
+
+        val previousSets = getPreviousSetDetails(exerciseId)
+
+        val (previousWeight, previousReps) = if (setNumber <= previousSets.size) {
+            val prevSet = previousSets[setNumber - 1]
+            prevSet.weight to prevSet.reps
+        } else {
+            null to null
+        }
+
+        val lastSetInCurrentWorkout = existingSets.lastOrNull()
+
+        val newWeight: Float
+        val newReps: Int
+
+        if (previousReps != null && previousReps != 0) {
+            if (previousReps < 12) {
+                newWeight = previousWeight ?: 0f
+                newReps = previousReps + 1
+            } else {
+                newWeight = (previousWeight ?: 0f) + 5f
+                newReps = 8
+            }
+        } else if (lastSetInCurrentWorkout != null && lastSetInCurrentWorkout.reps != 0) {
+            newWeight = lastSetInCurrentWorkout.weight
+            newReps = lastSetInCurrentWorkout.reps
+        } else {
+            newWeight = 0f
+            newReps = 0
+        }
+
+        val newSet = SetDetail(
+            workoutExerciseId = workoutExerciseId,
+            setNumber = setNumber,
+            weight = newWeight,
+            reps = newReps,
+            previousWeight = previousWeight,
+            previousReps = previousReps
+        )
+
+        existingSets.add(newSet)
+        currentSets[workoutExerciseId] = existingSets
+        _setsInProgress.value = currentSets
+    }
+
+
+
 
     fun removeSetFromWorkoutExercise(workoutExerciseId: Long, setDetail: SetDetail) {
         val currentSets = _setsInProgress.value.toMutableMap()
@@ -182,8 +248,10 @@ class ActiveWorkoutViewModel @Inject constructor(
             val insertedWorkoutId = workoutRepository.insertWorkout(workout)
 
             _exercises.value.forEach { exercise ->
-                val workoutExercise = exercise.copy(workoutId = insertedWorkoutId, workoutExerciseId = 0L)
-                val insertedWorkoutExerciseId = workoutExerciseRepository.insertWorkoutExercise(workoutExercise)
+                val workoutExercise =
+                    exercise.copy(workoutId = insertedWorkoutId, workoutExerciseId = 0L)
+                val insertedWorkoutExerciseId =
+                    workoutExerciseRepository.insertWorkoutExercise(workoutExercise)
 
                 _setsInProgress.value[exercise.workoutExerciseId]?.forEach { setDetail ->
                     setDetailRepository.insertSetDetail(
@@ -273,7 +341,7 @@ class ActiveWorkoutViewModel @Inject constructor(
                 _dialogState.value = DialogType.DialogForTemplateChangedWorkout
             } else if (isTemplateWorkout.value && !isWorkoutModified()) {
                 _dialogState.value = DialogType.DialogForTemplateUnchangedWorkout
-            } else if (!isTemplateWorkout.value){
+            } else if (!isTemplateWorkout.value) {
                 _dialogState.value = DialogType.DialogForEmptyWorkout
             } else {
                 _dialogState.value = null

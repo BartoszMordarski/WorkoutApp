@@ -17,7 +17,7 @@ import com.example.workoutapp.data.template.wtemplate.WorkoutTemplateDao
 
 @Database(
     entities = [Exercise::class, Workout::class, WorkoutExercise::class, SetDetail::class, WorkoutTemplate::class, TemplateExercise::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

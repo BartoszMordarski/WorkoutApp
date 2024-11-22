@@ -49,6 +49,7 @@ fun ActiveWorkoutScreen(
     val setsInProgress by viewModel.setsInProgress.collectAsState()
     val dialogState by viewModel.dialogState.collectAsState()
     var cancelDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     BackHandler {
         cancelDialog = true
@@ -107,11 +108,15 @@ fun ActiveWorkoutScreen(
         }
     }
 
+    //TODO trzeba zmienić workoutExercise aby miało jakieś UUID losowe ale duzo zmian bedzie
     LaunchedEffect(exerciseViewModel.selectedExercise) {
         exerciseViewModel.selectedExercise.collect { exercise ->
             exercise?.let {
+
+                val maxId = exercises.maxOfOrNull { it.workoutExerciseId } ?: 0
+
                 val workoutExercise = WorkoutExercise(
-                    workoutExerciseId = exercises.size.toLong() + 1,
+                    workoutExerciseId = maxId + 1,
                     exerciseId = exercise.id,
                     exerciseName = exercise.name,
                     workoutId = 0
@@ -170,7 +175,14 @@ fun ActiveWorkoutScreen(
                 ExerciseCard(
                     exercise = exercise,
                     sets = setsInProgress[exercise.workoutExerciseId] ?: emptyList(),
-                    onAddSet = { viewModel.addSetToWorkoutExercise(exercise.workoutExerciseId) }
+                    onAddSet = {
+                        coroutineScope.launch {
+                            viewModel.addSetToWorkoutExercise(
+                                exercise.workoutExerciseId,
+                                exercise.exerciseId
+                            )
+                        }
+                    }
                 )
             }
 
@@ -248,7 +260,7 @@ fun ExerciseCard(
         ) {
             Text(text = "Set", modifier = Modifier.weight(1f))
             Text(text = "Previous", modifier = Modifier.weight(1f))
-            Text(text = "kg", modifier = Modifier.weight(1f))
+            Text(text = "Kg", modifier = Modifier.weight(1f))
             Text(text = "Reps", modifier = Modifier.weight(1f))
         }
 
@@ -336,7 +348,7 @@ fun SetDetailRow(
                             offsetX = 0f
                         },
                         onHorizontalDrag = { _, dragAmount ->
-                                offsetX += dragAmount
+                            offsetX += dragAmount
                         }
                     )
                 },
@@ -344,7 +356,14 @@ fun SetDetailRow(
         ) {
 
             Text(text = setNumber.toString(), modifier = Modifier.weight(1f))
-            Text(text = "previous", modifier = Modifier.weight(1f))
+            Text(
+                text = if (setDetail.previousWeight != null && setDetail.previousReps != null) {
+                    "${setDetail.previousWeight}kg x ${setDetail.previousReps}"
+                } else {
+                    "-"
+                },
+                modifier = Modifier.weight(1f)
+            )
 
             var weight by remember { mutableStateOf(setDetail.weight.toString()) }
             TextField(
