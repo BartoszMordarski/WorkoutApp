@@ -37,7 +37,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             unselectedIcon = Icons.Outlined.History
         ),
         BottomNavigationItem(
-            title = "Add Workout",
+            title = "Workout",
             selectedIcon = Icons.Filled.Add,
             unselectedIcon = Icons.Outlined.Add
         ),

@@ -56,6 +56,7 @@ fun ActiveWorkoutScreen(
     var cancelDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val isLoading by viewModel.isLoading.collectAsState()
 
 
     BackHandler {
@@ -115,7 +116,6 @@ fun ActiveWorkoutScreen(
         }
     }
 
-    //TODO trzeba zmienić workoutExercise aby miało jakieś UUID losowe ale duzo zmian bedzie
     LaunchedEffect(exerciseViewModel.selectedExercise) {
         exerciseViewModel.selectedExercise.collect { exercise ->
             exercise?.let {
@@ -138,6 +138,7 @@ fun ActiveWorkoutScreen(
 
     Column(modifier = Modifier
         .fillMaxSize()
+        .systemBarsPadding()
         .pointerInput(Unit) {
             detectTapGestures(
                 onTap = { focusManager.clearFocus() }
@@ -159,7 +160,7 @@ fun ActiveWorkoutScreen(
                     placeholder = { Text("Workout Name") },
                     singleLine = true,
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(0.8f)
                         .clip(RoundedCornerShape(8.dp))
                 )
 
@@ -173,55 +174,66 @@ fun ActiveWorkoutScreen(
                     onClick = {
                         viewModel.finishWorkout()
                     },
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.weight(0.7f)
                 ) {
                     Text("Finish")
                 }
             }
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            items(exercises) { exercise ->
-                ExerciseCard(
-                    exercise = exercise,
-                    sets = setsInProgress[exercise.workoutExerciseId] ?: emptyList(),
-                    onAddSet = {
-                        coroutineScope.launch {
-                            viewModel.addSetToWorkoutExercise(
-                                exercise.workoutExerciseId,
-                                exercise.exerciseId
-                            )
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    items(
+                        items = exercises,
+                        key = { it.workoutExerciseId }
+                    ) { exercise ->
+                        ExerciseCard(
+                            exercise = exercise,
+                            sets = setsInProgress[exercise.workoutExerciseId] ?: emptyList(),
+                            onAddSet = {
+                                coroutineScope.launch {
+                                    viewModel.addSetToWorkoutExercise(
+                                        exercise.workoutExerciseId,
+                                        exercise.exerciseId
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                    item {
+                        Button(
+                            onClick = { navController.navigate("select_exercise") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text("Add Exercise")
                         }
                     }
-                )
-            }
 
-            item {
-                Button(
-                    onClick = { navController.navigate("select_exercise") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text("Add Exercise")
-                }
-            }
-
-            item {
-                Button(
-                    onClick = {
-                        cancelDialog = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Cancel Workout")
+                    item {
+                        Button(
+                            onClick = {
+                                cancelDialog = true
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Cancel Workout")
+                        }
+                    }
                 }
             }
         }
@@ -447,5 +459,11 @@ fun WorkoutTimer(
     val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
     val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
 
-    Text(text = String.format("%02d:%02d:%02d", hours, minutes, seconds))
+    val formattedTime = if (hours > 0) {
+        String.format("%d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
+
+    Text(text = formattedTime)
 }
