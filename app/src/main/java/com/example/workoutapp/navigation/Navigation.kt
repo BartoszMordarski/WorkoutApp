@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.workoutapp.presentation.history.HistoryScreen
 import com.example.workoutapp.HomeView
+import com.example.workoutapp.presentation.diet.DietSearchScreen
 import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen
 import com.example.workoutapp.presentation.workout.AddWorkoutScreen
@@ -25,6 +26,10 @@ fun Navigation(
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
             HomeView(innerPadding)
+        }
+
+        composable(Screen.Diet.route) {
+            DietSearchScreen(navController, innerPadding)
         }
 
         composable(Screen.AddWorkout.route) {

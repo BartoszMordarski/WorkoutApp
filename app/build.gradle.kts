@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "CALORIENINJA_API_KEY", "\"${project.findProperty("CALORIENINJA_API_KEY") ?: "defaultApiKey"}\"")
     }
 
     buildTypes {
@@ -41,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -61,6 +64,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.7.2")
 
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
