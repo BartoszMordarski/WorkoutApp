@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.example.workoutapp.presentation.history.HistoryScreen
 import com.example.workoutapp.HomeView
 import com.example.workoutapp.presentation.diet.DietSearchScreen
+import com.example.workoutapp.presentation.diet.TodayDietScreen
 import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen
 import com.example.workoutapp.presentation.workout.AddWorkoutScreen
@@ -30,6 +31,10 @@ fun Navigation(
 
         composable(Screen.Diet.route) {
             DietSearchScreen(navController, innerPadding)
+        }
+
+        composable(Screen.TodayDiet.route) {
+            TodayDietScreen(navController)
         }
 
         composable(Screen.AddWorkout.route) {
@@ -68,4 +73,4 @@ fun Navigation(
             SelectExerciseScreen(navController)
         }
     }
-    }
+}

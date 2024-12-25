@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.workoutapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -63,9 +63,11 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.7.2")
 
-
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.github.tehras:charts:0.2.4-alpha")
+
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)

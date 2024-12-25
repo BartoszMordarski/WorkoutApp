@@ -9,6 +9,7 @@ sealed class Screen(val route: String): Serializable {
     object Exercises : Screen("exercises")
     object History : Screen("history")
     object SelectExercise : Screen("select_exercise")
+    object TodayDiet: Screen("today_diet_screen")
 
 }
 

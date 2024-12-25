@@ -1,6 +1,10 @@
 package com.example.workoutapp.data.hiltmodules
+import android.app.Application
+import androidx.room.Room
+import com.example.workoutapp.data.AppDatabase
 import com.example.workoutapp.data.diet.api.CalorieNinjaApi
-import com.example.workoutapp.data.diet.model.DietRepository
+import com.example.workoutapp.data.diet.api.DietApiRepository
+import com.example.workoutapp.data.diet.model.DailyDietDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +19,12 @@ object DietModule {
 
     @Provides
     @Singleton
+    fun provideDailyDietDao(db: AppDatabase): DailyDietDao {
+        return db.dailyDietDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideCalorieNinjaApi(): CalorieNinjaApi {
         return Retrofit.Builder()
             .baseUrl("https://api.calorieninjas.com/")
@@ -25,8 +35,8 @@ object DietModule {
 
     @Provides
     @Singleton
-    fun provideDietRepository(api: CalorieNinjaApi): DietRepository {
-        return DietRepository(api)
+    fun provideDietApiRepository(api: CalorieNinjaApi): DietApiRepository {
+        return DietApiRepository(api)
     }
 
 }

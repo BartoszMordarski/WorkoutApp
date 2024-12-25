@@ -5,13 +5,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -40,109 +39,131 @@ fun DietSearchScreen(
 
 
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .padding(bottom = paddingValues.calculateBottomPadding())
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { focusManager.clearFocus() }
-                )
-            }
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = query,
-                onValueChange = { query = it },
-                placeholder = { Text("Search for foods") },
-                modifier = Modifier.weight(1f)
-            )
-
-            IconButton(
-                onClick = {
-                    query = ""
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { focusManager.clearFocus() }
+                    )
                 }
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Cancel,
-                    contentDescription = "Cancel"
+                TextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = { Text("Search for foods") },
+                    modifier = Modifier.weight(1f)
                 )
+
+                IconButton(
+                    onClick = {
+                        query = ""
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Cancel,
+                        contentDescription = "Cancel"
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        if (query.isNotBlank()) {
+                            viewModel.searchFoods(query)
+                            showResults = true
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        } else {
+                            showResults = false
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
+                }
             }
 
-            IconButton(
-                onClick = {
-                    if (query.isNotBlank()) {
-                        viewModel.searchFoods(query)
-                        showResults = true
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    } else {
-                        showResults = false
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search"
-                )
+
+                showResults && foodItems.isEmpty() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No results, try different query",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                }
+
+                showResults -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(foodItems) { food ->
+                            FoodItemRow(
+                                food = food,
+                                onAddToDiet = { viewModel.addFoodToDiet(food) }
+                            )
+                        }
+                    }
+                }
+
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.foods),
+                            contentDescription = "Food",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.FillHeight
+                        )
+                    }
+                }
             }
         }
 
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            showResults && foodItems.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No results, try different query",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-            }
-            showResults -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(foodItems) { food ->
-                        FoodItemRow(food)
-                    }
-                }
-            }
-            else -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.foods),
-                        contentDescription = "Food",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillHeight
-                    )
-                }
-            }
+        Button(
+            onClick = { navController.navigate("today_diet_screen") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            Text(text = "See Today's Diet")
         }
     }
 }
 
 @Composable
-fun FoodItemRow(food: FoodItem) {
+fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -175,6 +196,15 @@ fun FoodItemRow(food: FoodItem) {
                 text = "Carbohydrates: ${food.carbohydrates_total_g} g",
                 style = MaterialTheme.typography.bodyMedium
             )
+
+            Button(
+                onClick = { onAddToDiet(food) },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "Add to Today Diet")
+            }
         }
     }
 }
