@@ -195,14 +195,16 @@ fun WorkoutTemplateCard(
                     text = template.template.templateName,
                     style = MaterialTheme.typography.titleLarge
                 )
-                IconButton(
-                    onClick = { showDialog = true }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Template",
-                        tint = MaterialTheme.colorScheme.error
-                    )
+                if(!template.template.isDefault){
+                    IconButton(
+                        onClick = { showDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Template",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))

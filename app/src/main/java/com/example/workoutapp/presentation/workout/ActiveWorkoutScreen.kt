@@ -2,6 +2,7 @@ package com.example.workoutapp.presentation.workout
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -18,13 +19,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -258,6 +266,7 @@ fun ExerciseCard(
                 color = MaterialTheme.colorScheme.outline,
                 shape = MaterialTheme.shapes.large
             )
+            .clipToBounds()
     ) {
         Row(
             modifier = Modifier
@@ -339,6 +348,7 @@ fun ExerciseCard(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SetDetailRow(
     setDetail: SetDetail,
@@ -347,104 +357,116 @@ fun SetDetailRow(
 ) {
 
     var isCompleted by remember { mutableStateOf(setDetail.isCompleted) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
     val scope = rememberCoroutineScope()
-    val deleteThreshold = -300f
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(if (offsetX < deleteThreshold) Color.Red else Color.Transparent)
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), 0) }
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            if (offsetX < deleteThreshold) {
-                                scope.launch {
-                                    viewModel.removeSetFromWorkoutExercise(
-                                        setDetail.workoutExerciseId,
-                                        setDetail
-                                    )
-                                }
-                            }
-                            offsetX = 0f
-                        },
-                        onHorizontalDrag = { _, dragAmount ->
-                            offsetX += dragAmount
-                        }
+    val dismissState = rememberDismissState(
+        confirmStateChange = {
+            if (it == DismissValue.DismissedToStart) {
+                scope.launch {
+                    viewModel.removeSetFromWorkoutExercise(
+                        setDetail.workoutExerciseId,
+                        setDetail
                     )
-                },
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(
-                text = setNumber.toString(),
-                modifier = Modifier.weight(0.5f),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = if (setDetail.previousWeight != null && setDetail.previousReps != null) {
-                    "${setDetail.previousWeight.toInt()}kg x ${setDetail.previousReps}"
-                } else {
-                    "-"
-                },
-                modifier = Modifier.weight(1f), textAlign = TextAlign.Center
-            )
-
-            var weight by remember { mutableStateOf(setDetail.weight.toString()) }
-            TextField(
-                value = weight,
-                onValueChange = { newValue ->
-                    weight = newValue
-                    setDetail.weight = newValue.toFloatOrNull() ?: 0f
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                label = null,
-                placeholder = { Text("kg") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
-
-            var reps by remember { mutableStateOf(setDetail.reps.toString()) }
-            TextField(
-                value = reps,
-                onValueChange = { newValue ->
-                    reps = newValue
-                    setDetail.reps = newValue.toIntOrNull() ?: 0
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                label = null,
-                placeholder = { Text("reps") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
-
-            IconButton(
-                onClick = {
-                    viewModel.markSetAsCompleted(setDetail.workoutExerciseId, setDetail.setUUID)
-                    isCompleted = !isCompleted
-                },
-                modifier = Modifier.weight(0.5f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Confirm Set",
-                    tint = if (isCompleted) Color.Green else Color.Gray
-                )
+                }
             }
-
+            true
         }
-    }
+    )
+
+    SwipeToDismiss(
+        state = dismissState,
+        background = {
+            val color by animateColorAsState(
+                targetValue = if (dismissState.dismissDirection == DismissDirection.EndToStart) Color.Red else Color.Transparent,
+                label = ""
+            )
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(color)
+                    .padding(horizontal = 20.dp),
+            )
+        },
+        directions = setOf(DismissDirection.EndToStart),
+        dismissThresholds = { FractionalThreshold(0.25f) },
+        dismissContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = setNumber.toString(),
+                        modifier = Modifier.weight(0.5f),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = if (setDetail.previousWeight != null && setDetail.previousReps != null) {
+                            "${setDetail.previousWeight.toInt()}kg x ${setDetail.previousReps}"
+                        } else {
+                            "-"
+                        },
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center
+                    )
+
+                    var weight by remember { mutableStateOf(setDetail.weight.toString()) }
+                    TextField(
+                        value = weight,
+                        onValueChange = { newValue ->
+                            weight = newValue
+                            setDetail.weight = newValue.toFloatOrNull() ?: 0f
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        label = null,
+                        placeholder = { Text("kg") },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    )
+
+                    var reps by remember { mutableStateOf(setDetail.reps.toString()) }
+                    TextField(
+                        value = reps,
+                        onValueChange = { newValue ->
+                            reps = newValue
+                            setDetail.reps = newValue.toIntOrNull() ?: 0
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        label = null,
+                        placeholder = { Text("reps") },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    )
+
+                    IconButton(
+                        onClick = {
+                            viewModel.markSetAsCompleted(setDetail.workoutExerciseId, setDetail.setUUID)
+                            isCompleted = !isCompleted
+                        },
+                        modifier = Modifier.weight(0.5f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Confirm Set",
+                            tint = if (isCompleted) Color.Green else Color.Gray
+                        )
+                    }
+
+                }
+            }
+        }
+    )
 }
+
 
 
 @SuppressLint("DefaultLocale")
