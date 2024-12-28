@@ -8,8 +8,11 @@ sealed class Screen(val route: String): Serializable {
     object AddWorkout : Screen("add_workout")
     object Exercises : Screen("exercises")
     object History : Screen("history")
+    object WorkoutHistory : Screen("workout_history")
+    object DietHistory : Screen("diet_history")
     object SelectExercise : Screen("select_exercise")
     object TodayDiet: Screen("today_diet_screen")
+    object AddCustomMeal: Screen("add_custom_meal_screen")
 
 }
 

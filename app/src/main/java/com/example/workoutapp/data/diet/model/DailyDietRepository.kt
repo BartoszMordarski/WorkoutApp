@@ -14,7 +14,7 @@ class DailyDietRepository @Inject constructor(private val dailyDietDao: DailyDie
         return dailyDietDao.getDietItemsForDate(today)
     }
 
-    fun getAllDietHistory(): Flow<List<DailyDietItem>> {
+    suspend fun getAllDietItems(): List<DailyDietItem> {
         return dailyDietDao.getAllDietHistory()
     }
 
@@ -22,8 +22,12 @@ class DailyDietRepository @Inject constructor(private val dailyDietDao: DailyDie
         dailyDietDao.insertDietItem(dietItem)
     }
 
-    suspend fun deleteDietItem(dietItem: DailyDietItem) {
-        dailyDietDao.deleteDietItem(dietItem)
+    suspend fun deleteDietItem(item: DailyDietItem) {
+        dailyDietDao.deleteDietItem(item)
+    }
+
+    suspend fun deleteDietByDate(date: LocalDate) {
+        dailyDietDao.deleteDietByDate(date)
     }
 
 }

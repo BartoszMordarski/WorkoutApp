@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -112,13 +113,29 @@ fun DietSearchScreen(
                 showResults && foodItems.isEmpty() -> {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize(),
+                            .fillMaxSize()
+                            .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "No results, try different query",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "No results, try a different query or add a custom meal.",
+                                style = MaterialTheme.typography.headlineSmall,
+                                textAlign = TextAlign.Center
+                            )
+                            Button(
+                                onClick = { navController.navigate("add_custom_meal_screen") },
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .defaultMinSize(minWidth = 150.dp)
+                            ) {
+                                Text(text = "Add Custom Food")
+                            }
+                        }
                     }
                 }
 
@@ -139,12 +156,7 @@ fun DietSearchScreen(
                             .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.foods),
-                            contentDescription = "Food",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillHeight
-                        )
+                        Text("Search for foods")
                     }
                 }
             }

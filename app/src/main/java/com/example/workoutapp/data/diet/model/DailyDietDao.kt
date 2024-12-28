@@ -17,8 +17,11 @@ interface DailyDietDao {
     fun getDietItemsForDate(currentDate: LocalDate): Flow<List<DailyDietItem>>
 
     @Query("SELECT * FROM daily_diet ORDER BY dateAdded DESC")
-    fun getAllDietHistory(): Flow<List<DailyDietItem>>
+    suspend fun getAllDietHistory(): List<DailyDietItem>
+
+    @Query("DELETE FROM daily_diet WHERE dateAdded = :date")
+    suspend fun deleteDietByDate(date: LocalDate)
 
     @Delete
-    suspend fun deleteDietItem(dailyDiet: DailyDietItem)
+    suspend fun deleteDietItem(item: DailyDietItem)
 }
