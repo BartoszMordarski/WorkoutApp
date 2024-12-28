@@ -15,8 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -30,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 @Composable
@@ -84,7 +83,7 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color(0xFFFF9800))
+                        .background(Color(0xFFFFC107))
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Total Fat: $totalFat g", style = MaterialTheme.typography.bodyLarge)
@@ -96,7 +95,7 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color(0xFF03A9F4))
+                        .background(Color(0xFF2196F3))
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Total Carbs: $totalCarbs g", style = MaterialTheme.typography.bodyLarge)
@@ -108,8 +107,8 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
                 pieChartData = PieChartData(
                     slices = listOf(
                         PieChartData.Slice(totalProtein.toFloat(), color = Color(0xFF4CAF50)),
-                        PieChartData.Slice(totalFat.toFloat(), color =  Color(0xFFFF9800)),
-                        PieChartData.Slice(totalCarbs.toFloat(), color = Color(0xFF03A9F4))
+                        PieChartData.Slice(totalFat.toFloat(), color =  Color(0xFFFFC107)),
+                        PieChartData.Slice(totalCarbs.toFloat(), color = Color(0xFF2196F3))
                     )
                 ),
                 modifier = Modifier
@@ -152,16 +151,23 @@ fun DietItemCard(number: Int, dietItem: DailyDietItem, onDelete: (DailyDietItem)
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Calories: ${dietItem.calories} kcal",
+                text = "Serving Size: ${dietItem.servingSize} g",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Protein: ${dietItem.protein} g",
+                text = "Calories: ${String.format("%.1f", dietItem.calories)} kcal",
                 style = MaterialTheme.typography.bodyMedium
             )
-            Text(text = "Fat: ${dietItem.fat} g", style = MaterialTheme.typography.bodyMedium)
             Text(
-                text = "Carbohydrates: ${dietItem.carbs} g",
+                text = "Protein: ${String.format("%.1f", dietItem.protein)} g",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Fat: ${String.format("%.1f", dietItem.fat)} g",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Carbohydrates: ${String.format("%.1f", dietItem.carbs)} g",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

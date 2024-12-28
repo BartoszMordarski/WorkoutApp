@@ -32,6 +32,7 @@ class DietViewModel @Inject constructor(
         val dietItem = DailyDietItem(
             name = food.name,
             calories = food.calories,
+            servingSize = food.serving_size_g,
             protein = food.protein_g,
             fat = food.fat_total_g,
             carbs = food.carbohydrates_total_g,
@@ -39,6 +40,12 @@ class DietViewModel @Inject constructor(
         )
         viewModelScope.launch {
             dailyDietRepository.addDietItem(dietItem)
+        }
+    }
+
+    fun addCustomMeal(meal: DailyDietItem) {
+        viewModelScope.launch {
+            dailyDietRepository.addDietItem(meal)
         }
     }
 

@@ -6,15 +6,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.workoutapp.presentation.history.HistoryScreen
+import com.example.workoutapp.presentation.history.WorkoutHistoryScreen
 import com.example.workoutapp.HomeView
+import com.example.workoutapp.presentation.diet.AddCustomFoodScreen
 import com.example.workoutapp.presentation.diet.DietSearchScreen
 import com.example.workoutapp.presentation.diet.TodayDietScreen
 import com.example.workoutapp.presentation.exercise.ExerciseDetailsScreen
 import com.example.workoutapp.presentation.exercise.ExerciseScreen
 import com.example.workoutapp.presentation.workout.AddWorkoutScreen
 import com.example.workoutapp.presentation.exercise.AddEditExerciseScreen
+import com.example.workoutapp.presentation.history.DietHistoryScreen
 import com.example.workoutapp.presentation.history.HistoryDetailsScreen
+import com.example.workoutapp.presentation.history.HistoryScreen
 import com.example.workoutapp.presentation.workout.ActiveWorkoutScreen
 import com.example.workoutapp.presentation.workout.SelectExerciseScreen
 
@@ -37,6 +40,10 @@ fun Navigation(
             TodayDietScreen(navController)
         }
 
+        composable(Screen.AddCustomMeal.route) {
+            AddCustomFoodScreen(navController)
+        }
+
         composable(Screen.AddWorkout.route) {
             AddWorkoutScreen(navController, innerPadding)
         }
@@ -47,6 +54,14 @@ fun Navigation(
 
         composable(Screen.History.route) {
             HistoryScreen(navController, innerPadding)
+        }
+
+        composable(Screen.WorkoutHistory.route) {
+            WorkoutHistoryScreen(navController, innerPadding)
+        }
+
+        composable(Screen.DietHistory.route) {
+            DietHistoryScreen(navController, innerPadding)
         }
 
         composable<HistoryDetail> { backStackEntry ->

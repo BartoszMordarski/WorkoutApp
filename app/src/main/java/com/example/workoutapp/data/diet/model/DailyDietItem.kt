@@ -9,6 +9,7 @@ data class DailyDietItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val calories: Double,
+    val servingSize: Double,
     val protein: Double,
     val fat: Double,
     val carbs: Double,

@@ -1,45 +1,33 @@
 package com.example.workoutapp.presentation.history
-
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.workoutapp.data.activeworkout.WorkoutWithExercises
-import com.example.workoutapp.data.history.HistoryViewModel
-import com.example.workoutapp.navigation.HistoryDetail
-
+import com.example.workoutapp.R
 
 @Composable
 fun HistoryScreen(
     navController: NavController,
-    paddingValues: PaddingValues,
-    viewModel: HistoryViewModel = hiltViewModel()
+    paddingValues: PaddingValues
 ) {
-
-    val workoutHistory = viewModel.workoutHistory.collectAsState().value
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,129 +35,87 @@ fun HistoryScreen(
             .padding(bottom = paddingValues.calculateBottomPadding())
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .weight(1f)
         ) {
-            Text(
-                text = "History",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp).padding(horizontal = 8.dp)
-            )
-        }
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(workoutHistory) { workout ->
-                WorkoutCard(
-                    workout,
-                    viewModel,
-                    onClick = {
-                        navController.navigate(HistoryDetail(workout.workout.workoutId))
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
-fun WorkoutCard(
-    workoutWithExercises: WorkoutWithExercises,
-    viewModel: HistoryViewModel,
-    onClick: () -> Unit
-) {
-
-    var showDialog by remember { mutableStateOf(false) }
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(8.dp),
-        onClick = onClick
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .clickable {
+                        navController.navigate("workout_history")
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = workoutWithExercises.workout.workoutName,
-                    style = MaterialTheme.typography.headlineSmall
+                Image(
+                    painter = painterResource(id = R.drawable.workout_history),
+                    contentDescription = "workout_history_image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.DeleteForever,
-                        contentDescription = "Delete Workout"
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Workout Date",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = workoutWithExercises.workout.workoutDate)
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Icon(
-                    imageVector = Icons.Default.Timer,
-                    contentDescription = "Workout Duration",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = workoutWithExercises.workout.duration)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            workoutWithExercises.exercises.forEach { exercise ->
-                Text(
-                    text = "${exercise.sets.size} x ${exercise.workoutExercise.exerciseName}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Delete workout") },
-            text = { Text("Are you sure you want to delete this workout?") },
-            confirmButton = {
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = {
-                        viewModel.deleteWorkout(workoutWithExercises)
-                        showDialog = false
-                    }) {
-                        Text("Delete")
-                    }
+                        .matchParentSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                )
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button(onClick = { showDialog = false }) {
-                        Text("Cancel")
-                    }
-                }
+                Text(
+                    text = "Workout History",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        shadow = Shadow(
+                            color = Color.Black,
+                            offset = Offset(2f, 2f),
+                            blurRadius = 6f
+                        )
+                    ),
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-        )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .clickable {
+                        navController.navigate("diet_history")
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.diet_history),
+                    contentDescription = "diet_history_image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                )
+
+                Text(
+                    text = "Diet History",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        shadow = Shadow(
+                            color = Color.Black,
+                            offset = Offset(2f, 2f),
+                            blurRadius = 6f
+                        )
+                    ),
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
     }
 }
