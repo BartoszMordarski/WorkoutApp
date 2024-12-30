@@ -27,7 +27,7 @@ import com.example.workoutapp.data.template.wtemplate.WorkoutTemplateDao
         WorkoutTemplate::class,
         TemplateExercise::class,
         DailyDietItem::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
