@@ -11,5 +11,7 @@ data class Exercise(
     val name: String = "",
     val muscleGroup: String = "",
     val description: String? = null,
-    val isUserCreated: Boolean = false
+    val instructions: String? = null,
+    val isUserCreated: Boolean = false,
+    val imageName: String? = null
 )
