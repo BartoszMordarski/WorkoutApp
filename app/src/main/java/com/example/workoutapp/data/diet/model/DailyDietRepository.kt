@@ -1,7 +1,5 @@
 package com.example.workoutapp.data.diet.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject

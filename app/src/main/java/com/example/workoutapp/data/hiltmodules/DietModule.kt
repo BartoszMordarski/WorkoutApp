@@ -1,6 +1,4 @@
 package com.example.workoutapp.data.hiltmodules
-import android.app.Application
-import androidx.room.Room
 import com.example.workoutapp.data.AppDatabase
 import com.example.workoutapp.data.diet.api.CalorieNinjaApi
 import com.example.workoutapp.data.diet.api.DietApiRepository

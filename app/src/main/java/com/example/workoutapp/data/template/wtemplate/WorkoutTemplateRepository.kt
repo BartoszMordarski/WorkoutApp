@@ -68,10 +68,6 @@ class WorkoutTemplateRepository @Inject constructor(
         workoutTemplateDao.updateTemplate(template)
     }
 
-    suspend fun addTemplate(template: WorkoutTemplate, exercises: List<TemplateExercise>) {
-        workoutTemplateDao.insertTemplateWithExercises(template, exercises)
-    }
-
     suspend fun getExercisesByTemplateId(templateId: Long): List<TemplateExercise> {
         return workoutTemplateDao.getExercisesByTemplateId(templateId)
     }
