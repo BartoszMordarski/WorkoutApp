@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -53,32 +54,30 @@ fun HistoryDetailsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .padding(top = 24.dp)
+                .systemBarsPadding()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(bottom = 16.dp)
             ) {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBackIosNew,
-                        contentDescription = "Back",
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        contentDescription = "Back"
                     )
                 }
                 Text(
                     text = workout.workout.workoutName,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 16.dp).padding(horizontal = 8.dp)
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -108,11 +107,13 @@ fun HistoryDetailsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Divider(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                thickness = 1.dp
+                thickness = 1.dp,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+
             ) {
 
                 items(workout.exercises) { exerciseWithSets ->

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +58,7 @@ fun AddWorkoutScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp)
+                .padding(top = 36.dp)
         ) {
             Text(
                 text = "New Workout",
@@ -167,7 +168,11 @@ fun WorkoutTemplateCard(
                         onClick = {
                             showDialog = false
                         },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        )
                     ) {
                         Text("Cancel")
                     }
@@ -182,8 +187,7 @@ fun WorkoutTemplateCard(
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { onClick() },
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -193,7 +197,8 @@ fun WorkoutTemplateCard(
             ) {
                 Text(
                     text = template.template.templateName,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 if(!template.template.isDefault){
                     IconButton(

@@ -51,7 +51,7 @@ fun DietSearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(top = 4.dp)
+                .padding(top = 12.dp)
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
                 .pointerInput(Unit) {
@@ -66,7 +66,7 @@ fun DietSearchScreen(
                 Text(
                     text = "Diet Search",
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 16.dp).padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
 
@@ -174,13 +174,14 @@ fun DietSearchScreen(
 
                 showResults -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize().weight(1f).padding(bottom = 24.dp),
+                        modifier = Modifier.fillMaxSize().weight(1f).padding(bottom = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(foodItems) { food ->
                             FoodItemRow(
                                 food = food,
-                                onAddToDiet = { viewModel.addFoodToDiet(food) }
+                                onAddToDiet = { viewModel.addFoodToDiet(food) },
+                                viewModel
                             )
                         }
                     }
@@ -192,7 +193,7 @@ fun DietSearchScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Search for foods",
+                            text = "Search for foods...",
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onBackground
                         )
@@ -214,8 +215,8 @@ fun DietSearchScreen(
 }
 
 @Composable
-fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
-    var isAdded by remember { mutableStateOf(false) }
+fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit, viewModel: DietViewModel) {
+    val isAdded = viewModel.isFoodAdded(food)
 
 
     Card(
@@ -230,7 +231,8 @@ fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
             Text(
                 text = food.name,
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = "Calories: ${food.calories} kcal",
@@ -259,7 +261,6 @@ fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
                     onClick = {
                         if (!isAdded) {
                             onAddToDiet(food)
-                            isAdded = true
                         }
                     },
                     enabled = !isAdded,
@@ -286,7 +287,6 @@ fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
                     }
                 }
             }
-
 
         }
     }

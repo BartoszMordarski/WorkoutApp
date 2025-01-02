@@ -1,6 +1,8 @@
 package com.example.workoutapp.data.diet.model
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
@@ -27,6 +29,8 @@ class DietViewModel @Inject constructor(
 
     val todayDiet: Flow<List<DailyDietItem>> = dailyDietRepository.getDietItemsForToday()
 
+    private val _addedFoods = mutableStateOf<Map<String, Boolean>>(emptyMap())
+
     fun addFoodToDiet(food: FoodItem) {
         val today = LocalDate.now()
         val dietItem = DailyDietItem(
@@ -38,6 +42,8 @@ class DietViewModel @Inject constructor(
             carbs = food.carbohydrates_total_g,
             dateAdded = today
         )
+        _addedFoods.value += (food.name to true)
+
         viewModelScope.launch {
             dailyDietRepository.addDietItem(dietItem)
         }
@@ -47,6 +53,10 @@ class DietViewModel @Inject constructor(
         viewModelScope.launch {
             dailyDietRepository.addDietItem(meal)
         }
+    }
+
+    fun isFoodAdded(food: FoodItem): Boolean {
+        return _addedFoods.value[food.name] ?: false
     }
 
     fun deleteDietItem(item: DailyDietItem) {

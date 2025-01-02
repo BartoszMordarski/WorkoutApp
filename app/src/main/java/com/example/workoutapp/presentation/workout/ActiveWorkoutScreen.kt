@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -65,7 +67,6 @@ fun ActiveWorkoutScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val isLoading by viewModel.isLoading.collectAsState()
-
 
     BackHandler {
         cancelDialog = true
@@ -282,13 +283,15 @@ fun ExerciseCard(
             Text(
                 text = exercise.exerciseName,
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp),
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = { showDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete exercise"
+                    contentDescription = "Delete exercise",
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -300,10 +303,10 @@ fun ExerciseCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Set", modifier = Modifier.weight(0.5f), textAlign = TextAlign.Center)
-            Text(text = "Previous", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-            Text(text = "Kg", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-            Text(text = "Reps", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            Text(text = "Set", modifier = Modifier.weight(0.5f), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
+            Text(text = "Previous", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
+            Text(text = "Kg", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
+            Text(text = "Reps", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.weight(0.5f))
         }
 
@@ -414,7 +417,8 @@ fun SetDetailRow(
                     Text(
                         text = setNumber.toString(),
                         modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = if (setDetail.previousWeight != null && setDetail.previousReps != null) {
