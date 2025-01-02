@@ -82,7 +82,11 @@ fun DialogHandler(
                         }
 
                         Button(
-                            onClick = { viewModel.dismissDialog() }
+                            onClick = { viewModel.dismissDialog() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
                         ) {
                             Text("Cancel")
                         }

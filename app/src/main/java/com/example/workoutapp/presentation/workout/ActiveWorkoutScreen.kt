@@ -100,7 +100,11 @@ fun ActiveWorkoutScreen(
                             cancelDialog = false
                             navController.navigateUp()
                         },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        )
                     ) {
                         Text("Cancel")
                     }
@@ -237,7 +241,10 @@ fun ActiveWorkoutScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
                         ) {
                             Text("Cancel Workout")
                         }
@@ -338,7 +345,11 @@ fun ExerciseCard(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Button(onClick = { showDialog = false }) {
+                    Button(onClick = { showDialog = false },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        )) {
                         Text("Cancel")
                     }
                 }
