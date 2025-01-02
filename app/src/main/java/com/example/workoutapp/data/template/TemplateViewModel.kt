@@ -1,6 +1,5 @@
 package com.example.workoutapp.data.template
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.data.template.wtemplate.WorkoutTemplate

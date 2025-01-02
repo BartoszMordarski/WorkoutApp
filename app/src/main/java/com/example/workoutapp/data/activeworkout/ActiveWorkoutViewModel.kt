@@ -1,11 +1,8 @@
 package com.example.workoutapp.data.activeworkout
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.workoutapp.data.activeworkout.set.SetDetail
 import com.example.workoutapp.data.activeworkout.set.SetDetailRepository
 import com.example.workoutapp.data.activeworkout.wexercise.WorkoutExercise
@@ -18,7 +15,10 @@ import com.example.workoutapp.data.template.wtemplate.WorkoutTemplate
 import com.example.workoutapp.data.template.wtemplate.WorkoutTemplateRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
