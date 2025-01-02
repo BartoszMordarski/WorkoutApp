@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 @Composable
 fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel = hiltViewModel()) {
     val currentDate = remember { Calendar.getInstance().time }
-    val dateFormatter = SimpleDateFormat("EEEE dd.MM", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("EEEE dd.MM", Locale.ENGLISH)
     val formattedDate = dateFormatter.format(currentDate)
 
     val todayDiet by viewModel.todayDiet.collectAsState(initial = emptyList())
@@ -49,13 +49,12 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .systemBarsPadding()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
                 .padding(bottom = 16.dp)
         ) {
             IconButton(
@@ -68,24 +67,24 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
             }
 
             Text(
-                text = "Diet for $formattedDate",
-                style = MaterialTheme.typography.headlineMedium,
+                text = formattedDate,
+                style = MaterialTheme.typography.headlineLarge,
             )
         }
 
         if (todayDiet.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text("No meals added today", style = MaterialTheme.typography.headlineMedium)
             }
         } else {
-            Text("Total Calories: $totalCalories kcal", style = MaterialTheme.typography.bodyLarge)
+            Text("Total Calories: $totalCalories kcal", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(horizontal = 16.dp))
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 16.dp)) {
                 Box(
                     modifier = Modifier
                         .size(16.dp)
@@ -97,7 +96,7 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 16.dp)) {
                 Box(
                     modifier = Modifier
                         .size(16.dp)
@@ -109,7 +108,7 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 16.dp)) {
                 Box(
                     modifier = Modifier
                         .size(16.dp)
@@ -136,9 +135,10 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
                 sliceDrawer = SimpleSliceDrawer()
             )
 
-            Text("Meals:", style = MaterialTheme.typography.headlineMedium)
+            Text("Meals:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn {
+
+            LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
                 itemsIndexed(todayDiet) { index, dietItem ->
                     DietItemCard(
                         index + 1,
@@ -165,7 +165,7 @@ fun DietItemCard(
 
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding( vertical = 8.dp)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

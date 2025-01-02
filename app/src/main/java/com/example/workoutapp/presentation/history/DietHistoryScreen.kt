@@ -2,7 +2,6 @@ package com.example.workoutapp.presentation.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.data.diet.model.DietDay
@@ -95,30 +93,34 @@ fun DietCard(
     dietDay: DietDay,
     viewModel: DietHistoryViewModel,
 ) {
-    var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { expanded = !expanded },
+            .padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(8.dp),
     ) {
+        var showChart by remember { mutableStateOf(false) }
+
+
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Diet for ${dietDay.dateAdded}",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = { showDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.DeleteForever,
-                        contentDescription = "Delete Diet"
+                        contentDescription = "Delete Diet",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -132,24 +134,29 @@ fun DietCard(
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Total Protein: ${String.format("%.1f", dietDay.totalProtein)}",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Total Protein: ${String.format("%.1f", dietDay.totalProtein)} g",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF4CAF50)
                 )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Total Fat: ${String.format("%.1f", dietDay.totalFat)}",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Total Fat: ${String.format("%.1f", dietDay.totalFat)} g",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFFFFC107)
                 )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Total Carbs: ${String.format("%.1f", dietDay.totalCarbs)}",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Total Carbs: ${String.format("%.1f", dietDay.totalCarbs)} g",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF2196F3)
                 )
             }
 
@@ -162,7 +169,17 @@ fun DietCard(
                 )
             }
 
-            if (expanded) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { showChart = !showChart },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = if (showChart) "Hide Chart" else "Show Chart")
+            }
+
+
+            if (showChart) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 DietMacroBarChart(

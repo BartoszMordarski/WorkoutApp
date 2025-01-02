@@ -80,11 +80,10 @@ fun ExerciseScreen(
         ) {
             Text(
                 text = "Exercises",
-                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.primary),
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
-            var expanded by remember { mutableStateOf(false) }
 
             IconButton(onClick = { navController.navigate(AddExercise(null)) }) {
                 Icon(

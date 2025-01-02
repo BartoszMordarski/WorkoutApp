@@ -50,12 +50,12 @@ fun ExerciseDetailsScreen(
 
         var showInstructions by remember { mutableStateOf(false) }
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().systemBarsPadding()
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp)
                     .padding(bottom = 16.dp)
             ) {
                 IconButton(

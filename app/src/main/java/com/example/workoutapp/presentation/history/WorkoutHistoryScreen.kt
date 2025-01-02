@@ -102,13 +102,15 @@ fun WorkoutCard(
             ) {
                 Text(
                     text = workoutWithExercises.workout.workoutName,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = { showDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.DeleteForever,
-                        contentDescription = "Delete Workout"
+                        contentDescription = "Delete Workout",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
