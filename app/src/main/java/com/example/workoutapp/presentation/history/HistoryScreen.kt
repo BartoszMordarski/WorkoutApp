@@ -42,7 +42,7 @@ fun HistoryScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .clickable {
                         navController.navigate("workout_history")
                     },
@@ -84,7 +84,7 @@ fun HistoryScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .clickable {
                         navController.navigate("diet_history")
                     },

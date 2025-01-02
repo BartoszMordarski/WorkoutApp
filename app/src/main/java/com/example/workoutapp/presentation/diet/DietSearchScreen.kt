@@ -1,6 +1,7 @@
 package com.example.workoutapp.presentation.diet
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,10 +9,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -38,47 +41,69 @@ fun DietSearchScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(bottom = paddingValues.calculateBottomPadding())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(top = 4.dp)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
                 .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { focusManager.clearFocus() }
-                    )
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
                 }
         ) {
             Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+            ) {
+                Text(
+                    text = "Diet Search",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 16.dp).padding(horizontal = 8.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextField(
+                OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
                     placeholder = { Text("Search for foods") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
                 )
 
+                Spacer(modifier = Modifier.width(8.dp))
+
                 IconButton(
-                    onClick = {
-                        query = ""
-                    }
+                    onClick = { query = "" },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.small
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Cancel,
-                        contentDescription = "Cancel"
+                        contentDescription = "Clear",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
 
                 IconButton(
                     onClick = {
@@ -90,11 +115,18 @@ fun DietSearchScreen(
                         } else {
                             showResults = false
                         }
-                    }
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = MaterialTheme.shapes.small
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
+                        contentDescription = "Search",
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -102,11 +134,10 @@ fun DietSearchScreen(
             when {
                 isLoading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -119,28 +150,33 @@ fun DietSearchScreen(
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.align(Alignment.Center)
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "No results, try a different query or add a custom meal.",
-                                style = MaterialTheme.typography.headlineSmall,
+                                text = "No results found.\nTry a different query or add a custom meal.",
+                                style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center
                             )
                             Button(
                                 onClick = { navController.navigate("add_custom_meal_screen") },
                                 modifier = Modifier
                                     .wrapContentWidth()
-                                    .defaultMinSize(minWidth = 150.dp)
+                                    .defaultMinSize(minWidth = 150.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Text(text = "Add Custom Food")
+                                Text(text = "Add Custom Meal")
                             }
                         }
                     }
                 }
 
                 showResults -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().weight(1f).padding(bottom = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         items(foodItems) { food ->
                             FoodItemRow(
                                 food = food,
@@ -152,11 +188,14 @@ fun DietSearchScreen(
 
                 else -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Search for foods")
+                        Text(
+                            text = "Search for foods",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
             }
@@ -176,13 +215,18 @@ fun DietSearchScreen(
 
 @Composable
 fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
+    var isAdded by remember { mutableStateOf(false) }
+
+
     Card(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
             Text(
                 text = food.name,
                 style = MaterialTheme.typography.headlineMedium,
@@ -209,14 +253,43 @@ fun FoodItemRow(food: FoodItem, onAddToDiet: (FoodItem) -> Unit) {
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            Button(
-                onClick = { onAddToDiet(food) },
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = "Add to Today Diet")
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center)
+            {
+                Button(
+                    onClick = {
+                        if (!isAdded) {
+                            onAddToDiet(food)
+                            isAdded = true
+                        }
+                    },
+                    enabled = !isAdded,
+                    modifier = Modifier
+                        .padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF99FF99),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    if (isAdded) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(text = "Added!")
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Added"
+                            )
+                        }
+                    } else {
+                        Text(text = "Add to Today Diet")
+                    }
+                }
             }
+
+
         }
     }
 }
+
+

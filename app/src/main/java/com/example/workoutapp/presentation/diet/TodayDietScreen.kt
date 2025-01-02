@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +31,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 
 @Composable
@@ -49,11 +51,27 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Diet for $formattedDate",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp).padding(top = 16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .padding(bottom = 16.dp)
+        ) {
+            IconButton(
+                onClick = { navController.navigateUp() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBackIosNew,
+                    contentDescription = "Back",
+                )
+            }
+
+            Text(
+                text = "Diet for $formattedDate",
+                style = MaterialTheme.typography.headlineMedium,
+            )
+        }
 
         if (todayDiet.isEmpty()) {
             Box(
@@ -138,7 +156,13 @@ fun TodayDietScreen(navController: NavHostController, viewModel: DietViewModel =
 
 
 @Composable
-fun DietItemCard(number: Int, dietItem: DailyDietItem, onDelete: (DailyDietItem) -> Unit) {
+fun DietItemCard(
+    number: Int,
+    dietItem: DailyDietItem,
+    onDelete: (DailyDietItem) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -146,10 +170,23 @@ fun DietItemCard(number: Int, dietItem: DailyDietItem, onDelete: (DailyDietItem)
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "$number. " + dietItem.name,
-                style = MaterialTheme.typography.headlineMedium
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$number. " + dietItem.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Meal",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
             Text(
                 text = "Serving Size: ${dietItem.servingSize} g",
                 style = MaterialTheme.typography.bodyMedium
@@ -171,8 +208,41 @@ fun DietItemCard(number: Int, dietItem: DailyDietItem, onDelete: (DailyDietItem)
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        IconButton(onClick = { onDelete(dietItem) }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Meal")
-        }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Delete Meal") },
+            text = { Text("Are you sure you want to delete this meal?") },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = {
+                            onDelete(dietItem)
+                            showDialog = false
+                        }
+                    ) {
+                        Text("Delete")
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(onClick = { showDialog = false },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        )) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
     }
 }
+

@@ -12,6 +12,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,15 +51,28 @@ fun ExerciseDetailsScreen(
         var showInstructions by remember { mutableStateOf(false) }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = it.name,
-                style = MaterialTheme.typography.headlineLarge,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(top = 24.dp),
-                color = Color.White
-            )
+                    .padding(top = 40.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                IconButton(
+                    onClick = { navController.navigateUp() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBackIosNew,
+                        contentDescription = "Back",
+                    )
+                }
+
+                Text(
+                    text = it.name,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White
+                )
+            }
 
             if (imageResId != 0) {
                 Image(
