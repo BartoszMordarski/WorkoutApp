@@ -148,18 +148,20 @@ class ActiveWorkoutViewModel @Inject constructor(
     }
 
 
-    private suspend fun getPreviousSetDetails(exerciseId: Long): List<SetDetail> {
-        return workoutExerciseRepository.getLastWorkoutExerciseWithSets(exerciseId)
-            .firstOrNull()?.sets ?: emptyList()
-    }
+    private suspend fun getPreviousSetDetails(exerciseId: Long): Pair<List<SetDetail>, String?> {
+        val workoutExerciseWithSets = workoutExerciseRepository.getLastWorkoutExerciseWithSets(exerciseId)
+        val sets = workoutExerciseWithSets.firstOrNull()?.sets ?: emptyList()
+        val difficulty = workoutExerciseWithSets.firstOrNull()?.workoutExercise?.difficulty
 
+        return sets to difficulty
+    }
 
     suspend fun addSetToWorkoutExercise(workoutExerciseId: Long, exerciseId: Long) {
         val currentSets = _setsInProgress.value.toMutableMap()
         val existingSets = currentSets[workoutExerciseId]?.toMutableList() ?: mutableListOf()
         val setNumber = existingSets.size + 1
 
-        val previousSets = getPreviousSetDetails(exerciseId)
+        val (previousSets, difficulty) = getPreviousSetDetails(exerciseId)
 
         val (previousWeight, previousReps) = if (setNumber <= previousSets.size) {
             val prevSet = previousSets[setNumber - 1]
@@ -171,12 +173,18 @@ class ActiveWorkoutViewModel @Inject constructor(
         val lastSetInCurrentWorkout = existingSets.lastOrNull()
 
         val newWeight: Float
-        val newReps: Int
+        var newReps: Int
 
         if (previousReps != null && previousReps != 0) {
+            newReps = when (difficulty) {
+                "Easy" -> previousReps + 2
+                "Medium" -> previousReps + 1
+                "Hard" -> previousReps - 1
+                else -> previousReps
+            }
+
             if (previousReps < 12) {
                 newWeight = previousWeight ?: 0f
-                newReps = previousReps + 1
             } else {
                 newWeight = (previousWeight ?: 0f) + 5f
                 newReps = 8
@@ -215,7 +223,7 @@ class ActiveWorkoutViewModel @Inject constructor(
         _setsInProgress.value = currentSets.toMap()
     }
 
-    fun saveWorkout() {
+    fun saveWorkout(difficulty: String?) {
         viewModelScope.launch {
             val workout = Workout(
                 workoutName = _workoutName.value,
@@ -227,7 +235,11 @@ class ActiveWorkoutViewModel @Inject constructor(
 
             _exercises.value.forEach { exercise ->
                 val workoutExercise =
-                    exercise.copy(workoutId = insertedWorkoutId, workoutExerciseId = 0L)
+                    exercise.copy(
+                        workoutId = insertedWorkoutId,
+                        workoutExerciseId = 0L,
+                        difficulty = difficulty
+                    )
                 val insertedWorkoutExerciseId =
                     workoutExerciseRepository.insertWorkoutExercise(workoutExercise)
 

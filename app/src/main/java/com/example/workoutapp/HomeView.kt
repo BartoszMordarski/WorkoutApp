@@ -100,10 +100,10 @@ fun HomeView(
 
         item {
             val es = listOf(
-                Pair("12-02", 5),
                 Pair("12-09", 3),
-                Pair("12-16", 4),
-                Pair("12-23", 6),
+                Pair("12-16", 2),
+                Pair("12-23", 4),
+                Pair("12-30", 5),
             )
             Row(
                 modifier = Modifier
@@ -266,7 +266,7 @@ fun WorkoutLineChart(workoutCounts: List<Pair<String, Int>>) {
 
     val lineChartData = LineChartData(
         points = points,
-        lineDrawer = SolidLineDrawer(thickness = 2.dp, color = Color.Green)
+        lineDrawer = SolidLineDrawer(thickness = 8.dp, color = Color(0xFF4CAF50))
     )
 
     Card(
@@ -284,7 +284,7 @@ fun WorkoutLineChart(workoutCounts: List<Pair<String, Int>>) {
                 .height(250.dp)
                 .padding(16.dp),
             animation = simpleChartAnimation(),
-            pointDrawer = FilledCircularPointDrawer(color = Color.Black),
+            pointDrawer = FilledCircularPointDrawer(color = Color.Black, diameter = 20.dp),
             xAxisDrawer = SimpleXAxisDrawer(),
             yAxisDrawer = SimpleYAxisDrawer(),
             horizontalOffset = 5f,

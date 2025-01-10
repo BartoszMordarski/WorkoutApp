@@ -67,6 +67,7 @@ class DietViewModel @Inject constructor(
     fun searchFoods(query: String) {
         viewModelScope.launch {
             _isLoading.value = true
+            _addedFoods.value = emptyMap()
             try {
                 val foodList = apiRepository.searchFoods(query)
                 _foods.value = foodList
